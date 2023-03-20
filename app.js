@@ -27,22 +27,24 @@ app.post('/export', async (req, res) => {
 
     const exportData = response.data
     const { intents, slots } = parseExportData(exportData)
-    const csvContent = generateCsv(intents, slots)
+    const { csvContent, utterancesCount, entitiesCount } = generateCsv(
+      intents,
+      slots
+    )
 
-    res.setHeader('Content-Type', 'text/csv')
-    res.setHeader('Content-Disposition', 'attachment; filename=export.csv')
-    res.send(csvContent)
-
-    return
     // Save the CSV content to a file in the exports subfolder
-    const filename = `export-${Date.now()}.csv`
+    const randomNumber = Math.floor(Math.random() * 900) + 100
+    const filename = `export-${Date.now()}-${randomNumber}.csv`
     const filePath = path.join(__dirname, 'exports', filename)
     fs.writeFileSync(filePath, csvContent)
 
-    // Return the URL to download the CSV file
-    res
-      .status(200)
-      .json({ url: `${req.protocol}://${req.get('host')}/exports/${filename}` })
+    // Return the JSON response with the status, utterances count, entities count, and the download URL
+    res.status(200).json({
+      status: 'success',
+      utterancesCount,
+      entitiesCount,
+      url: `${req.protocol}://${req.get('host')}/exports/${filename}`,
+    })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Error exporting data' })

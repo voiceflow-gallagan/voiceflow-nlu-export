@@ -69,12 +69,21 @@ function ordinal(n) {
 
 function generateCsv(intents, slots) {
   let rows = []
+  let utterancesCount = 0
+  let entitiesCount = 0
 
   intents.forEach((intent) => {
     intent.inputs.forEach((input) => {
       const utterance = replaceSlotValues(input.text, slots)
         .trim()
         .replace(/\s{2,}/g, ' ')
+
+      const entityCount = (input.text.match(/{{\[(.*?)\]\.(.*?)}}/g) || [])
+        .length
+      entitiesCount += entityCount
+
+      utterancesCount++
+
       const row = [intent.name, utterance]
         .map((field) => `"${field.replace(/"/g, '""')}"`)
         .join(',')
@@ -82,7 +91,11 @@ function generateCsv(intents, slots) {
     })
   })
 
-  return rows.join('\n')
+  return {
+    csvContent: rows.join('\n'),
+    utterancesCount,
+    entitiesCount,
+  }
 }
 
 module.exports = { parseExportData, generateCsv }
