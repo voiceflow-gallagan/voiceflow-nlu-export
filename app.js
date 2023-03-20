@@ -17,7 +17,7 @@ app.post('/export', async (req, res) => {
     const { versionID, apiKey } = req.body
 
     const response = await axios.get(
-      `https://api.voiceflow.com/v2/versions/${versionID}/export`,
+      `https://${process.env.ENDPOINT}/v2/versions/${versionID}/export`,
       {
         headers: {
           Authorization: apiKey,
