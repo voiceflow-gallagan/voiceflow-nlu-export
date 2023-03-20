@@ -43,7 +43,7 @@ app.post('/export', async (req, res) => {
       status: 'success',
       utterancesCount,
       entitiesCount,
-      url: `${req.protocol}://${req.get('host')}/exports/${filename}`,
+      url: `https://${req.get('host')}/exports/${filename}`,
     })
   } catch (error) {
     console.error(error)
